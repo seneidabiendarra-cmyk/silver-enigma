@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSR User Profile Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --teal: #D0021B;
+  --teal-light: #FDEDEF;
+  --teal-dark: #8B0012;
+  --blue: #378ADD;
+  --blue-light: #E6F1FB;
+  --blue-dark: #0C447C;
+  --amber: #EF9F27;
+  --amber-light: #FAEEDA;
+  --amber-dark: #633806;
+  --green: #639922;
+  --green-light: #EAF3DE;
+  --green-dark: #27500A;
+  --coral: #D85A30;
+  --coral-light: #FAECE7;
+  --coral-dark: #4A1B0C;
+  --bg: #F5F2ED;
+  --surface: #FFFFFF;
+  --text: #1A1A18;
+  --muted: #6B6B65;
+  --border: rgba(0,0,0,0.1);
+  --yellow: #F5C800;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── BACKGROUND TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(208,2,27,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 20%, rgba(55,138,221,0.04) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page { position: relative; z-index: 1; }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ── HEADER BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-badge {
+  background: var(--yellow);
+  color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  line-height: 1;
+}
+
+.logo-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.progress-track {
+  width: 140px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── WELCOME SCREEN ── */
+#screen-welcome {
+  justify-content: center;
+  align-items: center;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.welcome-inner {
+  max-width: 560px;
+}
+
+.welcome-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+
+.welcome-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(42px, 8vw, 72px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.welcome-title span {
+  color: var(--teal);
+}
+
+.welcome-desc {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.name-field-wrap {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.name-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.name-input {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.name-input:focus {
+  border-color: var(--teal);
+}
+
+.name-input::placeholder {
+  color: #BBBAB4;
+}
+
+.btn-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--teal);
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-start:hover { background: #A80015; }
+.btn-start:active { transform: scale(0.99); }
+.btn-start:disabled { background: #C8C8C2; cursor: default; }
+
+.welcome-meta {
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── QUIZ SCREEN ── */
+#screen-quiz {
+  flex-direction: column;
+  padding-bottom: 60px;
+}
+
+.quiz-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.question-wrap {
+  max-width: 640px;
+  width: 100%;
+}
+
+.q-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+}
+
+.q-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  text-align: left;
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  width: 100%;
+}
+
+.opt:hover {
+  border-color: var(--teal);
+  background: #FAFAF8;
+}
+
+.opt.selected {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.opt-letter {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  margin-top: 1px;
+}
+
+.opt.selected .opt-letter {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+
+.quiz-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+}
+
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.18s, opacity 0.18s;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.btn-nav:hover { background: rgba(0,0,0,0.04); }
+.btn-nav:disabled { opacity: 0.3; cursor: default; }
+.btn-nav.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.btn-nav.primary:hover { background: #A80015; }
+.btn-nav.primary:disabled { background: #C8C8C2; border-color: #C8C8C2; }
+
+/* ── RESULT SCREEN ── */
+#screen-result {
+  flex-direction: column;
+}
+
+.result-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.result-card {
+  max-width: 680px;
+  width: 100%;
+}
+
+.result-hero {
+  margin-bottom: 32px;
+}
+
+.result-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.result-name-line {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(14px, 3vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.result-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(48px, 9vw, 80px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.result-subtitle-tag {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.result-divider {
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: visible;
+}
+
+.result-divider::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 80px;
+}
+
+.result-desc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-bottom: 32px;
+  padding-left: 16px;
+  border-left: 3px solid;
+}
+
+.traits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 500px) {
+  .traits-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.trait-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+
+.trait-key {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.trait-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.score-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.score-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.score-row:last-child { margin-bottom: 0; }
+
+.score-lbl {
+  font-size: 13px;
+  color: var(--muted);
+  width: 170px;
+  flex-shrink: 0;
+}
+
+.score-track {
+  flex: 1;
+  height: 7px;
+  background: var(--bg);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.8s cubic-bezier(0.23,1,0.32,1);
+}
+
+.score-pct {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  width: 34px;
+  text-align: right;
+}
+
+/* snapshot section */
+.snapshot-wrap {
+  border: 1.5px dashed var(--border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.snapshot-label {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--bg);
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.18s;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.btn-action:hover { background: rgba(0,0,0,0.05); }
+
+.btn-action.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+.btn-action.primary:hover { background: #A80015; }
+
+/* print snapshot styles */
+#snapshot-box {
+  background: #fff;
+  border: 1px solid #e0e0da;
+  border-radius: 4px;
+  padding: 20px;
+  font-family: 'Barlow', sans-serif;
+}
+
+.snap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0da;
+}
+
+.snap-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+.snap-logo span {
+  background: var(--yellow);
+  padding: 2px 8px;
+  margin-right: 6px;
+}
+
+.snap-meta { font-size: 12px; color: #888; }
+
+.snap-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.snap-profile-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.snap-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.snap-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 14px;
+  padding-left: 10px;
+  border-left: 3px solid;
+}
+
+.snap-traits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.snap-trait {
+  background: #F5F5F0;
+  border-radius: 3px;
+  padding: 8px 10px;
+}
+
+.snap-trait-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.snap-trait-val {
+  font-size: 11px;
+  font-weight: 600;
+  color: #222;
+}
+
+.snap-bars .snap-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.snap-bar-row:last-child { margin-bottom: 0; }
+
+.snap-bar-lbl { font-size: 11px; color: #888; width: 150px; flex-shrink: 0; }
+.snap-bar-track { flex: 1; height: 5px; background: #E8E8E4; border-radius: 99px; overflow: hidden; }
+.snap-bar-fill { height: 100%; border-radius: 99px; }
+.snap-bar-pct { font-size: 11px; color: #888; width: 28px; text-align: right; font-weight: 600; }
+
+.snap-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0da;
+  font-size: 10px;
+  color: #aaa;
+  text-align: right;
+  letter-spacing: 0.04em;
+}
+
+/* ── ACTIVITY MULTI-SELECT ── */
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+@media (max-width: 480px) { .activity-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.act-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.3;
+}
+.act-btn:hover { border-color: var(--teal); background: #FAFAF8; }
+.act-btn.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+.act-btn .act-check {
+  flex-shrink: 0;
+  width: 16px; height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.act-btn.selected .act-check { background: var(--teal); border-color: var(--teal); }
+.act-check-tick { display: none; width: 8px; height: 8px; fill: white; }
+.act-btn.selected .act-check-tick { display: block; }
+.act-limit-note { font-size: 12px; color: var(--muted); margin-top: 10px; font-style: italic; }
+
+/* ── PACKING STYLE CARDS ── */
+.pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pack-card {
+  padding: 20px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.pack-card:hover { border-color: var(--teal); background: #FAFAF8; }
+.pack-card.selected { border-color: var(--teal); background: var(--teal-light); }
+.pack-icon { font-size: 28px; margin-bottom: 10px; line-height: 1; }
+.pack-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.pack-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.pack-card.selected .pack-title { color: var(--teal-dark); }
+.pack-card.selected .pack-desc { color: var(--teal-dark); opacity: 0.8; }
+
+/* copy toast */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1A1A18;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: transform 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<!-- ══════════════ WELCOME SCREEN ══════════════ -->
+<section class="screen active" id="screen-welcome">
+  <div class="welcome-inner">
+    <div class="welcome-eyebrow">MSR · Cascade Designs</div>
+    <h1 class="welcome-title">What kind of<br>outdoor user<br><span>are you?</span></h1>
+    <p class="welcome-desc">17 questions. One profile. Discover which MSR user type matches how you actually live and gear up outdoors.</p>
+
+    <div class="name-field-wrap">
+      <label class="name-label" for="user-name">Your name</label>
+      <input class="name-input" type="text" id="user-name" placeholder="First and last name" autocomplete="name" />
+    </div>
+
+    <button class="btn-start" id="btn-start" disabled>
+      Start the quiz &rarr;
+    </button>
+
+    <p class="welcome-meta">Takes about 3 minutes &nbsp;·&nbsp; 15 questions</p>
+  </div>
+</section>
+
+<!-- ══════════════ QUIZ SCREEN ══════════════ -->
+<section class="screen" id="screen-quiz">
+  <header class="topbar">
+    <div class="logo">
+      <span class="logo-badge">MSR</span>
+      <span class="logo-text">User Profile Quiz</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <span id="progress-label">0 / 17</span>
+    </div>
+  </header>
+
+  <div class="quiz-body">
+    <div class="question-wrap" id="question-wrap"></div>
+  </div>
+
+  <footer class="quiz-footer">
+    <button class="btn-nav" id="btn-prev" disabled>← Back</button>
+    <button class="btn-nav primary" id="btn-next" disabled>Next →</button>
+  </footer>
+</section>
+
+<!-- ══════════════ RESULT SCREEN ══════════════ -->
+<section class="screen" id="screen-result">
+  <header class="topbar">
+    <div class="logo">
+      <span class="logo-badge">MSR</span>
+      <span class="logo-text">User Profile Quiz</span>
+    </div>
+    <button class="btn-nav" id="btn-retake" style="font-size:13px;">Retake Quiz</button>
+  </header>
+
+  <div class="result-body">
+    <div class="result-card" id="result-card"></div>
+  </div>
+</section>
+
+</div>
+
+<div class="toast" id="toast">Snapshot copied to clipboard!</div>
+
+<script>
+const questions = [
+  {
+    q: "How often are you typically outside doing outdoor activities?",
+    opts: [
+      { text: "5+ days a week — it's basically my job or lifestyle", scores: { guide:3, athlete:2, enthusiast:1, generalist:0, novice:0 } },
+      { text: "About 4 days a week — I train and push myself regularly", scores: { guide:1, athlete:3, enthusiast:2, generalist:0, novice:0 } },
+      { text: "2–3 days a week — I get out when I can", scores: { guide:0, athlete:1, enthusiast:3, generalist:1, novice:0 } },
+      { text: "A few times a month — when life allows", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:1 } },
+      { text: "A handful of times a year — mostly when friends plan something", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:3 } }
+    ]
+  },
+  {
+    q: "How would you describe your relationship to outdoor sports?",
+    opts: [
+      { text: "I guide clients professionally — this is my career", scores: { guide:4, athlete:0, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I train seriously for events and track my performance", scores: { guide:0, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I love being outside in almost any capacity — wide range of sports", scores: { guide:0, athlete:1, enthusiast:3, generalist:1, novice:0 } },
+      { text: "I enjoy medium-intensity activities and appreciate the outdoors", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "I mostly go with friends or groups — I wouldn't go solo", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "When it comes to gear, how do you typically acquire it?",
+    opts: [
+      { text: "Mostly through prodeals, brand programs, or it's provided to me", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "Mix of prodeals, DTC, and specialty retail — I do my research", scores: { guide:1, athlete:3, enthusiast:1, generalist:0, novice:0 } },
+      { text: "Specialty outdoor shops — I like expert recommendations", scores: { guide:0, athlete:1, enthusiast:3, generalist:1, novice:0 } },
+      { text: "Online, outdoor chains, or sports stores — especially during sales", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:1 } },
+      { text: "Big box stores, Amazon, or whatever's cheapest that works", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "What's your top priority when choosing a piece of gear?",
+    opts: [
+      { text: "Long-term durability and reliability above everything else", scores: { guide:4, athlete:1, enthusiast:1, generalist:0, novice:0 } },
+      { text: "Performance and weight — every gram matters for what I do", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "Brand trust and aesthetics — I want to love it and rely on it", scores: { guide:0, athlete:1, enthusiast:3, generalist:2, novice:0 } },
+      { text: "Cost and value — I don't need the top of the line", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+      { text: "Price is almost the only thing — I borrow gear when I can", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How specialized is your outdoor activity? Do you focus on specific disciplines?",
+    opts: [
+      { text: "I guide in several high-expertise environments (alpine, whitewater, etc.)", scores: { guide:4, athlete:0, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I focus on 2–3 specific sports where I feel naturally strong", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I dabble in many sports but I'm not really a specialist", scores: { guide:0, athlete:0, enthusiast:4, generalist:1, novice:0 } },
+      { text: "A wide range at medium intensity — whatever sounds fun", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "Whatever my friends are doing — I follow along", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How do you feel about gear compactness and weight?",
+    opts: [
+      { text: "Compactness over weight — I'm hauling gear for clients too", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "Weight is everything — I optimize for the lightest possible setup", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I prefer lighter gear but I'm not obsessive about it", scores: { guide:0, athlete:1, enthusiast:3, generalist:1, novice:0 } },
+      { text: "Not really a consideration — I prioritize convenience", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+      { text: "I don't really think about it — I usually borrow or rent", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "What does your outdoor training or preparation look like?",
+    opts: [
+      { text: "Year-round physical training plus continuing education and certifications", scores: { guide:4, athlete:2, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I train specifically for events and actively track performance metrics", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I try to stay fit — maybe one event a year but I don't obsess over times", scores: { guide:0, athlete:1, enthusiast:4, generalist:1, novice:0 } },
+      { text: "I get active when a big trip or event is coming up", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+      { text: "I don't really train — I just show up", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "What does your gear collection look like right now?",
+    opts: [
+      { text: "Highly technical, activity-specific gear — prioritizing compactness and reliability", scores: { guide:4, athlete:2, enthusiast:0, generalist:0, novice:0 } },
+      { text: "Best-in-class performance gear for the 2–3 sports I focus on", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "A diverse mix of good-quality gear spanning multiple sports", scores: { guide:0, athlete:1, enthusiast:4, generalist:1, novice:0 } },
+      { text: "Moderately diverse — I have the basics for a few activities", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "Not much — mostly general-purpose stuff; I borrow or rent otherwise", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How do you discover new gear or make purchase decisions?",
+    opts: [
+      { text: "Other guides, brand relationships, professional events and promos", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "Athlete influencers, trusted gear blogs, and editorial reviews", scores: { guide:0, athlete:4, enthusiast:2, generalist:0, novice:0 } },
+      { text: "Mix of athletes, editorial reviews, and consumer ratings", scores: { guide:0, athlete:2, enthusiast:4, generalist:1, novice:0 } },
+      { text: "Consumer reviews and gear blog articles — I research before buying", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "Whatever has good ratings on Amazon or is ranked well by the retailer", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How do you feel about being the first to try a new product?",
+    opts: [
+      { text: "I test gear professionally — brands send it to me before launch", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I love being first — I actively seek out new performance gear", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I'm open to it if I hear good things from people I trust", scores: { guide:0, athlete:1, enthusiast:2, generalist:3, novice:0 } },
+      { text: "I prefer to wait until there are lots of reviews", scores: { guide:0, athlete:0, enthusiast:1, generalist:2, novice:3 } },
+      { text: "I stick to what I know and what looks reliable online", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "What's your relationship to risk and safety in the outdoors?",
+    opts: [
+      { text: "I'm responsible for others' safety — I hold certifications and train constantly", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I push my limits but I know my skills and train to manage risk well", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I like challenge but stay within my comfort zone", scores: { guide:0, athlete:1, enthusiast:3, generalist:2, novice:0 } },
+      { text: "I prefer lower-stakes activities — I'm cautious by nature outdoors", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+      { text: "I'm pretty new to this — safety feels uncertain so I stay with groups", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How would you describe your outdoor activity in terms of intensity?",
+    opts: [
+      { text: "High-expertise, high-risk environments — routinely", scores: { guide:4, athlete:2, enthusiast:0, generalist:0, novice:0 } },
+      { text: "High intensity — I'm training and competing", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "Moderately high — I challenge myself but variety matters more", scores: { guide:0, athlete:1, enthusiast:4, generalist:1, novice:0 } },
+      { text: "Medium intensity — active enough to stay fit", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "Low to medium — I enjoy the experience more than the effort", scores: { guide:0, athlete:0, enthusiast:0, generalist:2, novice:4 } }
+    ]
+  },
+  {
+    q: "If your favorite piece of gear broke mid-trip, what would you do?",
+    opts: [
+      { text: "I carry repair kits and know how to fix most things in the field", scores: { guide:4, athlete:2, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I'd improvise — I've done it before and have the skills to adapt", scores: { guide:2, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I'd try to figure it out — I know my gear reasonably well", scores: { guide:0, athlete:1, enthusiast:3, generalist:2, novice:0 } },
+      { text: "I'd probably cut the trip short or borrow something", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+      { text: "I'd be pretty stuck — gear repair isn't really in my skill set", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  },
+  {
+    q: "How do you typically plan or organize an outdoor trip?",
+    opts: [
+      { text: "I plan and lead trips for others — route planning and logistics are part of my job", scores: { guide:4, athlete:1, enthusiast:0, generalist:0, novice:0 } },
+      { text: "I plan meticulously — conditions, gear lists, training loads all factored in", scores: { guide:1, athlete:4, enthusiast:1, generalist:0, novice:0 } },
+      { text: "I research thoroughly and plan well — I might track routes but not times", scores: { guide:0, athlete:1, enthusiast:4, generalist:1, novice:0 } },
+      { text: "I do some planning but rely on others' expertise and recommendations", scores: { guide:0, athlete:0, enthusiast:1, generalist:4, novice:1 } },
+      { text: "I follow whoever organized it — I usually join rather than lead", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } }
+    ]
+  }
+];
+
+// ── SPECIAL QUESTION CONFIGS ──
+const ACTIVITIES_Q_IDX = 14; // 0-based (after 14 standard questions)
+const PACKING_Q_IDX = 15;
+const BRANDS_Q_IDX = 16;
+
+const allActivities = [
+  "Backpacking", "Day hiking", "Trail running", "Road running", "Car camping",
+  "Rock climbing", "Alpine climbing", "Ice climbing", "Mountaineering",
+  "Alpine skiing", "Ski touring / Backcountry skiing", "Nordic skiing / XC", "Snowshoeing", "Snowboarding",
+  "Whitewater kayaking", "Sea kayaking", "Canoe / Flatwater paddling", "Rafting",
+  "Mountain biking", "Dirt biking", "Gravel cycling", "Road cycling", "Bikepacking",
+  "Fly fishing", "Hunting / Overlanding", "Stand-up paddleboarding", "Surfing",
+  "Canyoneering", "Paragliding / Hang gliding", "Wildlife / Bird watching", "Photography outdoors"
+];
+
+// Each brand has profile affinity scores
+const allBrands = [
+  { name: "Black Diamond",    scores: { guide:3, athlete:2, enthusiast:1, generalist:0, novice:0 } },
+  { name: "Arc'teryx",        scores: { guide:2, athlete:3, enthusiast:2, generalist:1, novice:0 } },
+  { name: "Mammut",           scores: { guide:3, athlete:2, enthusiast:1, generalist:0, novice:0 } },
+  { name: "BCA",              scores: { guide:3, athlete:1, enthusiast:1, generalist:0, novice:0 } },
+  { name: "MSR",              scores: { guide:3, athlete:2, enthusiast:2, generalist:1, novice:0 } },
+  { name: "KUIU",             scores: { guide:1, athlete:3, enthusiast:1, generalist:0, novice:0 } },
+  { name: "Norrona",          scores: { guide:1, athlete:3, enthusiast:2, generalist:0, novice:0 } },
+  { name: "RAB",              scores: { guide:2, athlete:3, enthusiast:1, generalist:0, novice:0 } },
+  { name: "Patagonia",        scores: { guide:1, athlete:1, enthusiast:3, generalist:2, novice:1 } },
+  { name: "The North Face",   scores: { guide:0, athlete:1, enthusiast:2, generalist:3, novice:2 } },
+  { name: "Marmot",           scores: { guide:0, athlete:1, enthusiast:3, generalist:3, novice:1 } },
+  { name: "Salomon",          scores: { guide:0, athlete:2, enthusiast:3, generalist:2, novice:0 } },
+  { name: "Fjallraven",       scores: { guide:0, athlete:0, enthusiast:3, generalist:2, novice:1 } },
+  { name: "Osprey",           scores: { guide:1, athlete:1, enthusiast:3, generalist:2, novice:0 } },
+  { name: "Therm-a-Rest",     scores: { guide:2, athlete:2, enthusiast:2, generalist:1, novice:0 } },
+  { name: "Petzl",            scores: { guide:3, athlete:2, enthusiast:1, generalist:0, novice:0 } },
+  { name: "Garmin",           scores: { guide:2, athlete:3, enthusiast:2, generalist:1, novice:0 } },
+  { name: "Jones",            scores: { guide:0, athlete:2, enthusiast:3, generalist:1, novice:0 } },
+  { name: "Columbia",         scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+  { name: "Montane",          scores: { guide:1, athlete:2, enthusiast:2, generalist:2, novice:0 } },
+  { name: "Vaude",            scores: { guide:0, athlete:1, enthusiast:2, generalist:3, novice:0 } },
+  { name: "Jack Wolfskin",    scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:2 } },
+  { name: "Lowa",             scores: { guide:1, athlete:2, enthusiast:2, generalist:2, novice:0 } },
+  { name: "Scarpa",           scores: { guide:2, athlete:3, enthusiast:2, generalist:0, novice:0 } },
+  { name: "Nike",             scores: { guide:0, athlete:1, enthusiast:0, generalist:1, novice:3 } },
+  { name: "Lululemon",        scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:3 } },
+  { name: "REI Co-op",        scores: { guide:0, athlete:0, enthusiast:2, generalist:3, novice:2 } },
+  { name: "Cabela's / Bass Pro", scores: { guide:0, athlete:0, enthusiast:1, generalist:2, novice:2 } },
+  { name: "Amazon / generic", scores: { guide:0, athlete:0, enthusiast:0, generalist:1, novice:4 } },
+  { name: "Hilleberg",        scores: { guide:3, athlete:2, enthusiast:2, generalist:0, novice:0 } },
+  { name: "Sea to Summit",    scores: { guide:2, athlete:2, enthusiast:2, generalist:1, novice:0 } },
+  { name: "Outdoor Research", scores: { guide:2, athlete:2, enthusiast:2, generalist:1, novice:0 } }
+];
+
+let selectedBrands = [];
+
+const packingOpts = [
+  { id: "comfort", icon: "🏕️", title: "Comfort camper", desc: "Camp chair, camp kitchen, solar lights, Bluetooth speaker — if it makes the experience better, it's coming along.", scores: { guide:0, athlete:0, enthusiast:1, generalist:3, novice:4 } },
+  { id: "balanced", icon: "🎒", title: "Balanced packer", desc: "A few creature comforts, but nothing excessive. I know what earns its weight and what's just extra bulk.", scores: { guide:1, athlete:1, enthusiast:4, generalist:2, novice:1 } },
+  { id: "ultralight", icon: "⚖️", title: "Ultralight minimalist", desc: "If it isn't essential it stays home. My kit is dialed, curated, and probably lighter than your daypack.", scores: { guide:2, athlete:4, enthusiast:2, generalist:0, novice:0 } },
+  { id: "pro", icon: "🧰", title: "Pro setup", desc: "My gear is optimized for safety and client needs, not personal comfort. It's all functional — nothing decorative.", scores: { guide:4, athlete:2, enthusiast:1, generalist:0, novice:0 } }
+];
+
+// Stores multi-select and special answers separately
+let selectedActivities = [];
+let packingStyle = null;
+
+const profiles = {
+  guide: {
+    name: "Guide",
+    subtitle: "Outdoor Lifer — Professional",
+    color: "#D0021B",
+    badgeBg: "#FDEDEF",
+    badgeText: "#8B0012",
+    barColor: "#D0021B",
+    desc: "You live the outdoor life professionally. Safety, reliability, and client experience drive every gear decision. You train year-round, hold certifications, and you essentially live in other people's vacations — making sure everyone gets home safe and smiling.",
+    traits: [
+      { key: "Frequency", val: "5+ days/week" },
+      { key: "Purchase priority", val: "Durability & compactness" },
+      { key: "Gear access", val: "Prodeals & company-provided" },
+      { key: "Influenced by", val: "Other guides, brand reps" },
+      { key: "Tech adoption", val: "Medium (as tester)" }
+    ]
+  },
+  athlete: {
+    name: "Outdoor Athlete",
+    subtitle: "Outdoor Lifer — Performance-Driven",
+    color: "#378ADD",
+    badgeBg: "#E6F1FB",
+    badgeText: "#0C447C",
+    barColor: "#378ADD",
+    desc: "You're outside 4 days a week training for specific events, tracking performance, and investing in best-level gear. You focus on 2–3 activities where you feel naturally gifted — and you buy gear like it's part of the training plan.",
+    traits: [
+      { key: "Frequency", val: "4 days/week" },
+      { key: "Purchase priority", val: "Performance & weight" },
+      { key: "Gear access", val: "Prodeal, DTC, specialty retail" },
+      { key: "Influenced by", val: "Athletes, gear editorial" },
+      { key: "Tech adoption", val: "High (first adopt)" }
+    ]
+  },
+  enthusiast: {
+    name: "Dedicated Enthusiast",
+    subtitle: "Outdoor Lifer — Multi-Sport",
+    color: "#BA7517",
+    badgeBg: "#FAEEDA",
+    badgeText: "#633806",
+    barColor: "#EF9F27",
+    desc: "You love being outside in almost any capacity. Wide knowledge across sports, high performance level, but not a specialist. Maybe one event a year, tracking routes but not times — and you own a diverse collection of quality gear bought at specialty retail.",
+    traits: [
+      { key: "Frequency", val: "2–3 days/week" },
+      { key: "Purchase priority", val: "Brand, aesthetic, cost" },
+      { key: "Gear access", val: "Brand DTC, local specialty" },
+      { key: "Influenced by", val: "Athletes, media, editorial" },
+      { key: "Tech adoption", val: "Early majority" }
+    ]
+  },
+  generalist: {
+    name: "Generalist",
+    subtitle: "Outdoor Lifer — Versatile Enjoyer",
+    color: "#639922",
+    badgeBg: "#EAF3DE",
+    badgeText: "#27500A",
+    barColor: "#97C459",
+    desc: "You love medium-intensity outdoor activities across a wide variety. You rely on others' expertise for gear recommendations, get out enough to stay fit, and pick up your gear online or at chain stores — especially during sales.",
+    traits: [
+      { key: "Frequency", val: "3–4 days/month" },
+      { key: "Purchase priority", val: "Cost, brand, aesthetic" },
+      { key: "Gear access", val: "Outdoor chain, big box, Amazon" },
+      { key: "Influenced by", val: "Consumer reviews, gear blogs" },
+      { key: "Tech adoption", val: "Late majority" }
+    ]
+  },
+  novice: {
+    name: "Outdoor Novice",
+    subtitle: "Newbie — Experience-Seeker",
+    color: "#D85A30",
+    badgeBg: "#FAECE7",
+    badgeText: "#4A1B0C",
+    barColor: "#D85A30",
+    desc: "You enjoy life in a multitude of ways — travel, friends, food, and sometimes the outdoors. Low-to-medium intensity activities with groups are your thing. You borrow or rent gear when needed and tend to shop on price from big box stores.",
+    traits: [
+      { key: "Frequency", val: "3–4 days/month" },
+      { key: "Purchase priority", val: "Cost, aesthetic, brand" },
+      { key: "Gear access", val: "Big box, general stores, Amazon" },
+      { key: "Influenced by", val: "Retailer rankings, reviews" },
+      { key: "Tech adoption", val: "Laggard" }
+    ]
+  }
+};
+
+const profileKeys = ['guide','athlete','enthusiast','generalist','novice'];
+const profileLabels = { guide:'Guide', athlete:'Outdoor Athlete', enthusiast:'Dedicated Enthusiast', generalist:'Generalist', novice:'Outdoor Novice' };
+
+let current = 0;
+let answers = new Array(questions.length).fill(null);
+let userName = '';
+const TOTAL_Q = questions.length + 3; // 14 standard + activities + packing + brands
+
+// ── WELCOME ──
+const nameInput = document.getElementById('user-name');
+const btnStart = document.getElementById('btn-start');
+
+nameInput.addEventListener('input', () => {
+  btnStart.disabled = nameInput.value.trim().length < 2;
+});
+
+nameInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !btnStart.disabled) startQuiz();
+});
+
+btnStart.addEventListener('click', startQuiz);
+
+function startQuiz() {
+  userName = nameInput.value.trim();
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+// ── QUIZ ──
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const progressFill = document.getElementById('progress-fill');
+const progressLabel = document.getElementById('progress-label');
+const questionWrap = document.getElementById('question-wrap');
+
+btnPrev.addEventListener('click', () => { if (current > 0) { current--; renderQuestion(); } });
+btnNext.addEventListener('click', () => {
+  if (current === ACTIVITIES_Q_IDX && selectedActivities.length < 1) return;
+  if (current === PACKING_Q_IDX && packingStyle === null) return;
+  if (current === BRANDS_Q_IDX && selectedBrands.length < 1) return;
+  if (current < ACTIVITIES_Q_IDX && answers[current] === null) return;
+  if (current === TOTAL_Q - 1) {
+    showResult();
+  } else {
+    current++;
+    renderQuestion();
+  }
+});
+
+function renderQuestion() {
+  const pct = Math.round((current / TOTAL_Q) * 100);
+  progressFill.style.width = pct + '%';
+  progressLabel.textContent = (current + 1) + ' / ' + TOTAL_Q;
+  btnPrev.disabled = current === 0;
+  btnNext.textContent = current === TOTAL_Q - 1 ? 'See my profile →' : 'Next →';
+
+  if (current === ACTIVITIES_Q_IDX) {
+    renderActivitiesQuestion();
+    return;
+  }
+  if (current === PACKING_Q_IDX) {
+    renderPackingQuestion();
+    return;
+  }
+  if (current === BRANDS_Q_IDX) {
+    renderBrandsQuestion();
+    return;
+  }
+
+  // Standard question
+  const q = questions[current];
+  const letters = ['A','B','C','D','E'];
+  btnNext.disabled = answers[current] === null;
+
+  questionWrap.innerHTML = `
+    <div class="q-number">Question ${current + 1} of ${TOTAL_Q}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="options-list">
+      ${q.opts.map((o, i) => `
+        <button class="opt${answers[current] === i ? ' selected' : ''}" data-i="${i}">
+          <span class="opt-letter">${letters[i]}</span>
+          <span>${o.text}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  questionWrap.querySelectorAll('.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i);
+      answers[current] = i;
+      questionWrap.querySelectorAll('.opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      btnNext.disabled = false;
+    });
+  });
+
+  questionWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderActivitiesQuestion() {
+  btnNext.disabled = selectedActivities.length < 1;
+  questionWrap.innerHTML = `
+    <div class="q-number">Question ${current + 1} of ${TOTAL_Q}</div>
+    <div class="q-text">Which outdoor activities do you participate in most? Pick your top 4.</div>
+    <div class="activity-grid">
+      ${allActivities.map(a => `
+        <button class="act-btn${selectedActivities.includes(a) ? ' selected' : ''}" data-act="${a}">
+          <span class="act-check">
+            <svg class="act-check-tick" viewBox="0 0 8 8"><polyline points="1,4 3,6.5 7,1.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          ${a}
+        </button>
+      `).join('')}
+    </div>
+    <div class="act-limit-note" id="act-note">
+      ${selectedActivities.length}/4 selected${selectedActivities.length >= 4 ? ' — deselect one to change your choices' : ''}
+    </div>
+  `;
+
+  questionWrap.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const act = btn.dataset.act;
+      if (selectedActivities.includes(act)) {
+        selectedActivities = selectedActivities.filter(a => a !== act);
+        btn.classList.remove('selected');
+      } else {
+        if (selectedActivities.length >= 4) return;
+        selectedActivities.push(act);
+        btn.classList.add('selected');
+      }
+      const note = document.getElementById('act-note');
+      note.textContent = selectedActivities.length + '/4 selected' + (selectedActivities.length >= 4 ? ' — deselect one to change your choices' : '');
+      btnNext.disabled = selectedActivities.length < 1;
+    });
+  });
+
+  questionWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPackingQuestion() {
+  btnNext.disabled = packingStyle === null;
+  questionWrap.innerHTML = `
+    <div class="q-number">Question ${current + 1} of ${TOTAL_Q}</div>
+    <div class="q-text">When you pack for your preferred sport, how do you pack?</div>
+    <div class="pack-grid">
+      ${packingOpts.map(o => `
+        <button class="pack-card${packingStyle === o.id ? ' selected' : ''}" data-pack="${o.id}">
+          <div class="pack-icon">${o.icon}</div>
+          <div class="pack-title">${o.title}</div>
+          <div class="pack-desc">${o.desc}</div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  questionWrap.querySelectorAll('.pack-card').forEach(card => {
+    card.addEventListener('click', () => {
+      packingStyle = card.dataset.pack;
+      questionWrap.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      btnNext.disabled = false;
+    });
+  });
+
+  questionWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderBrandsQuestion() {
+  btnNext.disabled = selectedBrands.length < 1;
+  questionWrap.innerHTML = `
+    <div class="q-number">Question ${current + 1} of ${TOTAL_Q}</div>
+    <div class="q-text">Which brands do you most associate with / engage with? Pick up to 4.</div>
+    <div class="activity-grid">
+      ${allBrands.map(b => `
+        <button class="act-btn${selectedBrands.includes(b.name) ? ' selected' : ''}" data-brand="${b.name}">
+          <span class="act-check">
+            <svg class="act-check-tick" viewBox="0 0 8 8"><polyline points="1,4 3,6.5 7,1.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          ${b.name}
+        </button>
+      `).join('')}
+    </div>
+    <div class="act-limit-note" id="brand-note">
+      ${selectedBrands.length}/4 selected${selectedBrands.length >= 4 ? ' — deselect one to change your choices' : ''}
+    </div>
+  `;
+
+  questionWrap.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const brand = btn.dataset.brand;
+      if (selectedBrands.includes(brand)) {
+        selectedBrands = selectedBrands.filter(b => b !== brand);
+        btn.classList.remove('selected');
+      } else {
+        if (selectedBrands.length >= 4) return;
+        selectedBrands.push(brand);
+        btn.classList.add('selected');
+      }
+      const note = document.getElementById('brand-note');
+      note.textContent = selectedBrands.length + '/4 selected' + (selectedBrands.length >= 4 ? ' — deselect one to change your choices' : '');
+      btnNext.disabled = selectedBrands.length < 1;
+    });
+  });
+
+  questionWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function computeScores() {
+  const s = { guide:0, athlete:0, enthusiast:0, generalist:0, novice:0 };
+  answers.forEach((ansIdx, qi) => {
+    if (ansIdx === null) return;
+    const sc = questions[qi].opts[ansIdx].scores;
+    for (const k in sc) s[k] += sc[k];
+  });
+  // Add packing style scores
+  if (packingStyle) {
+    const po = packingOpts.find(o => o.id === packingStyle);
+    if (po) for (const k in po.scores) s[k] += po.scores[k];
+  }
+  // Add brand scores
+  selectedBrands.forEach(name => {
+    const b = allBrands.find(b => b.name === name);
+    if (b) for (const k in b.scores) s[k] += b.scores[k];
+  });
+  return s;
+}
+
+function showResult() {
+  const scores = computeScores();
+  const maxKey = profileKeys.reduce((a,b) => scores[a] >= scores[b] ? a : b);
+  const p = profiles[maxKey];
+  const total = Object.values(scores).reduce((a,b) => a+b, 0) || 1;
+  const now = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  // Build dynamic traits: Top activities first, then profile traits
+  const activitiesVal = selectedActivities.length > 0 ? selectedActivities.slice(0,3).join(', ') : '—';
+  const packingVal = packingStyle ? packingOpts.find(o => o.id === packingStyle).title : '—';
+  const brandsVal = selectedBrands.length > 0 ? selectedBrands.join(', ') : '—';
+  const dynamicTraits = [
+    { key: "Top activities", val: activitiesVal },
+    { key: "Preferred brands", val: brandsVal },
+    { key: "Camp style", val: packingVal },
+    ...p.traits
+  ];
+
+  const traitsHtml = dynamicTraits.map(t => `
+    <div class="trait-block">
+      <div class="trait-key">${t.key}</div>
+      <div class="trait-val">${t.val}</div>
+    </div>
+  `).join('');
+
+  const scoreBarsHtml = profileKeys.map(k => {
+    const pct = Math.round((scores[k]/total)*100);
+    return `
+      <div class="score-row">
+        <span class="score-lbl">${profileLabels[k]}</span>
+        <div class="score-track"><div class="score-fill" style="width:${pct}%; background:${profiles[k].barColor};"></div></div>
+        <span class="score-pct">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+
+  // Snapshot box (printable / copyable)
+  const snapBarsHtml = profileKeys.map(k => {
+    const pct = Math.round((scores[k]/total)*100);
+    return `
+      <div class="snap-bar-row">
+        <span class="snap-bar-lbl">${profileLabels[k]}</span>
+        <div class="snap-bar-track"><div class="snap-bar-fill" style="width:${pct}%; background:${profiles[k].barColor};"></div></div>
+        <span class="snap-bar-pct">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+
+  const snapTraitsHtml = dynamicTraits.map(t => `
+    <div class="snap-trait">
+      <div class="snap-trait-key">${t.key}</div>
+      <div class="snap-trait-val">${t.val}</div>
+    </div>
+  `).join('');
+
+  const resultCard = document.getElementById('result-card');
+  resultCard.innerHTML = `
+    <div class="result-hero">
+      <div class="result-eyebrow" style="color:${p.color}">Your MSR User Profile</div>
+      <div class="result-name-line">${userName}</div>
+      <div class="result-title" style="color:${p.color}">${p.name}</div>
+      <div class="result-subtitle-tag" style="background:${p.badgeBg}; color:${p.badgeText};">${p.subtitle}</div>
+    </div>
+
+    <div class="result-divider" style="--bar:${p.color}">
+      <div style="position:absolute;left:0;top:0;height:100%;width:80px;background:${p.color};border-radius:2px;"></div>
+    </div>
+
+    <p class="result-desc" style="border-color:${p.color};">${p.desc}</p>
+
+    <div class="traits-grid">${traitsHtml}</div>
+
+    <div class="score-section">
+      <div class="score-heading">Score breakdown — all profiles</div>
+      ${scoreBarsHtml}
+    </div>
+
+    <div class="snapshot-wrap">
+      <span class="snapshot-label">Shareable snapshot</span>
+      <div id="snapshot-box">
+        <div class="snap-header">
+          <div>
+            <div class="snap-logo"><span>MSR</span>User Profile Quiz</div>
+          </div>
+          <div class="snap-meta">${now}</div>
+        </div>
+        <div class="snap-name">${userName}</div>
+        <div class="snap-profile-name" style="color:${p.color};">${p.name}</div>
+        <div class="snap-tag" style="background:${p.badgeBg}; color:${p.badgeText};">${p.subtitle}</div>
+        <p class="snap-desc" style="border-color:${p.color};">${p.desc}</p>
+        <div class="snap-traits">${snapTraitsHtml}</div>
+        <div class="snap-bars">${snapBarsHtml}</div>
+        <div class="snap-footer">MSR · Cascade Designs &nbsp;·&nbsp; User Research</div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-action primary" id="btn-copy-snapshot">Download snapshot PNG</button>
+      <button class="btn-action" id="btn-print">Print / Save PDF</button>
+    </div>
+  `;
+
+  showScreen('screen-result');
+
+  document.getElementById('btn-copy-snapshot').addEventListener('click', downloadSnapshotPNG);
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+  document.getElementById('btn-retake').addEventListener('click', () => {
+    current = 0;
+    answers = new Array(questions.length).fill(null);
+    selectedActivities = [];
+    packingStyle = null;
+    selectedBrands = [];
+    showScreen('screen-welcome');
+  });
+}
+
+function downloadSnapshotPNG() {
+  const btn = document.getElementById('btn-copy-snapshot');
+  const box = document.getElementById('snapshot-box');
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+
+  // Temporarily boost snapshot box for high-res capture
+  const origStyle = box.getAttribute('style') || '';
+  box.style.width = '680px';
+  box.style.padding = '28px';
+
+  html2canvas(box, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    onclone: (doc) => {
+      // Ensure fonts load in the cloned doc
+      const el = doc.getElementById('snapshot-box');
+      if (el) {
+        el.style.fontFamily = "'Barlow', sans-serif";
+      }
+    }
+  }).then(canvas => {
+    box.setAttribute('style', origStyle);
+    const safeName = userName.replace(/\s+/g, '_') || 'result';
+    const link = document.createElement('a');
+    link.download = `MSR_Profile_${safeName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = 'Download snapshot PNG';
+    btn.disabled = false;
+    showToast('PNG downloaded!');
+  }).catch(() => {
+    box.setAttribute('style', origStyle);
+    btn.textContent = 'Download snapshot PNG';
+    btn.disabled = false;
+    showToast('Download failed — try Print / Save PDF instead.');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// Print styles
+const printStyle = document.createElement('style');
+printStyle.textContent = `
+  @media print {
+    .topbar, .result-actions, .snapshot-label, .snapshot-wrap { display: none !important; }
+    .result-hero, .result-desc, .traits-grid, .score-section { display: block !important; }
+    #snapshot-box { border: 1px solid #ccc !important; }
+    body { background: #fff !important; }
+  }
+`;
+document.head.appendChild(printStyle);
+</script>
+</body>
+</html>
